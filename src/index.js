@@ -22,9 +22,9 @@ function addDoctor() {
               doctors.push(doctor);
 
               console.log("Doctor added successfully!");
-              console.log(doctors);
+              // console.log(doctors);
 
-              rl.close();
+              showMenu()
             });
           });
         });
@@ -33,35 +33,57 @@ function addDoctor() {
   });
 }
 
+function viewDoctors() {
+  if (doctors.length === 0) {
+    console.log("No doctors available.");
+    showMenu();
+    return;
+  }
+
+  console.log("\n========== Doctors ==========");
+
+  for (const doctor of doctors) {
+    console.log("----------------------------");
+    console.log(`Doctor ID: ${doctor.id}`);
+    console.log(`Name: ${doctor.name}`);
+    console.log(`Specialization: ${doctor.specialization}`);
+    console.log(`Available Slots: ${doctor.availableSlots.join(", ")}`);
+  }
+
+  console.log("----------------------------");
+
+  showMenu();
+}
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-console.log("================================");
-console.log("  Hospital Appointment System");
-console.log("================================");
+function showMenu() {
+  console.log("================================");
+  console.log("  Hospital Appointment System");
+  console.log("================================");
 
-console.log("1. Add Doctor");
-console.log("2. Add Patient");
-console.log("3. View Doctors");
-console.log("4. View Patients");
-console.log("5. Book Appointment");
-console.log("6. Cancel Appointment");
-console.log("7. View Waitlist");
-console.log("8. Suggest Slot");
-console.log("9. Exit");
+  console.log("1. Add Doctor");
+  console.log("2. Add Patient");
+  console.log("3. View Doctors");
+  console.log("4. View Patients");
+  console.log("5. Book Appointment");
+  console.log("6. Cancel Appointment");
+  console.log("7. View Waitlist");
+  console.log("8. Suggest Slot");
+  console.log("9. Exit");
 
-// rl.question("Enter your choice: ", (choice) => {
-//     console.log("You selected:", choice);
-//     rl.close();
-// });
+  rl.question("Enter your choice: ", (choice) => {
+    if (choice === "1") {
+      addDoctor();
+    } else if (choice === "3") {
+      viewDoctors();
+    } else if (choice === "9") {
+      rl.close();
+    }
+  });
+}
 
-rl.question("Enter your choice: ", (choice) => {
-  if (choice === "1") {
-    addDoctor();
-  } else {
-    console.log("You selected:", choice);
-    rl.close();
-  }
-});
+showMenu();
