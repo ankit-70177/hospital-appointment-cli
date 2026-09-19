@@ -1,9 +1,17 @@
 const readline = require("readline");
+const fs = require("fs");
 
-let doctors = [];
-let patients = [];
-let appointments = [];
-let waitlist = [];
+let doctors = JSON.parse(fs.readFileSync("data/doctors.json"));
+let patients = JSON.parse(fs.readFileSync("data/patients.json"));
+let appointments = JSON.parse(fs.readFileSync("data/appointments.json"));
+let waitlist = JSON.parse(fs.readFileSync("data/waitlist.json"));
+
+function saveData() {
+    fs.writeFileSync("data/doctors.json", JSON.stringify(doctors, null, 2));
+    fs.writeFileSync("data/patients.json", JSON.stringify(patients, null, 2));
+    fs.writeFileSync("data/appointments.json", JSON.stringify(appointments, null, 2));
+    fs.writeFileSync("data/waitlist.json", JSON.stringify(waitlist, null, 2));
+}
 
 function addDoctor() {
   rl.question("Enter Doctor ID: ", (doctorId) => {
@@ -21,7 +29,7 @@ function addDoctor() {
               };
 
               doctors.push(doctor);
-
+              saveData();
               console.log("Doctor added successfully!");
               // console.log(doctors);
 
@@ -46,7 +54,7 @@ function addPatient() {
         };
 
         patients.push(patient);
-
+        saveData();
         console.log("Patient added successfully!");
 
         showMenu();
@@ -173,7 +181,7 @@ if (waitingPatient) {
     appointments = appointments.filter(
       (a) => a.id !== appointmentId
     );
-
+    saveData();
     console.log("Appointment cancelled successfully.");
 
     showMenu();
@@ -266,7 +274,7 @@ function bookAppointment() {
         patientId: patientId,
         doctorId: doctorId
       });
-
+      saveData();
       console.log("You have been added to the waitlist.");
     } else {
       console.log("You were not added to the waitlist.");
@@ -304,7 +312,7 @@ const appointment = {
 doctor.availableSlots.splice(slotIndex, 1);
 
 appointments.push(appointment);
-
+saveData();
 console.log("Appointment booked successfully!");
 console.log(appointment);
 
