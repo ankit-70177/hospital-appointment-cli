@@ -141,11 +141,10 @@ function cancelAppointment() {
       (d) => d.id === appointment.doctorId
     );
 
-    doctor.availableSlots.push(appointment.slot);
 
     const waitingPatient = waitlist.find(
-      (entry) => entry.doctorId === appointment.doctorId
-    );
+  (entry) => entry.doctorId === appointment.doctorId
+);
 
 if (waitingPatient) {
   const patient = patients.find(
@@ -166,6 +165,9 @@ if (waitingPatient) {
   waitlist = waitlist.filter(
     (entry) => entry !== waitingPatient
   );
+
+} else {
+  doctor.availableSlots.push(appointment.slot);
 }
 
     appointments = appointments.filter(
@@ -207,6 +209,33 @@ function viewWaitlist() {
   console.log("----------------------------");
 
   showMenu();
+}
+
+function suggestSlot() {
+    rl.question("Enter Doctor ID: ", (doctorId) => {
+
+        const doctor = doctors.find(
+            (d) => d.id === doctorId
+        );
+
+        if (!doctor) {
+            console.log("Doctor not found.");
+            showMenu();
+            return;
+        }
+
+        if (doctor.availableSlots.length === 0) {
+            console.log("No slots available for this doctor.");
+            showMenu();
+            return;
+        }
+
+        const suggestedSlot = doctor.availableSlots[0];
+
+        console.log(`Suggested slot for ${doctor.name}: ${suggestedSlot}`);
+
+        showMenu();
+    });
 }
 
 function bookAppointment() {
@@ -332,6 +361,8 @@ console.log("10. Exit");
   cancelAppointment()
 }else if (choice === "8") {
   viewWaitlist()
+}else if (choice === "9") {
+  suggestSlot()
 }else if (choice === "10") {
   rl.close();
 }
