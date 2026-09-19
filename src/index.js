@@ -3,8 +3,7 @@ const readline = require("readline");
 let doctors = [];
 let patients = [];
 let appointments = [];
-
-
+let waitlist = [];
 
 function addDoctor() {
   rl.question("Enter Doctor ID: ", (doctorId) => {
@@ -144,6 +143,31 @@ function cancelAppointment() {
 
     doctor.availableSlots.push(appointment.slot);
 
+    const waitingPatient = waitlist.find(
+      (entry) => entry.doctorId === appointment.doctorId
+    );
+
+if (waitingPatient) {
+  const patient = patients.find(
+    (p) => p.id === waitingPatient.patientId
+  );
+
+  console.log(`Assigning slot to ${patient.name}`);
+
+  const newAppointment = {
+    id: `A${appointments.length + 1}`,
+    patientId: patient.id,
+    doctorId: doctor.id,
+    slot: appointment.slot
+  };
+
+  appointments.push(newAppointment);
+
+  waitlist = waitlist.filter(
+    (entry) => entry !== waitingPatient
+  );
+}
+
     appointments = appointments.filter(
       (a) => a.id !== appointmentId
     );
@@ -153,6 +177,38 @@ function cancelAppointment() {
     showMenu();
   });
 }
+
+function viewWaitlist() {
+  if (waitlist.length === 0) {
+    console.log("Waitlist is empty.");
+    showMenu();
+    return;
+  }
+
+  console.log("\n========== Waitlist ==========");
+
+  for (const entry of waitlist) {
+    const patient = patients.find(
+      (p) => p.id === entry.patientId
+    );
+
+    const doctor = doctors.find(
+      (d) => d.id === entry.doctorId
+    );
+
+    console.log("----------------------------");
+    console.log(`Patient: ${patient.name}`);
+    console.log(`Patient ID: ${patient.id}`);
+    console.log(`Doctor: ${doctor.name}`);
+    console.log(`Doctor ID: ${doctor.id}`);
+    console.log(`Specialization: ${doctor.specialization}`);
+  }
+
+  console.log("----------------------------");
+
+  showMenu();
+}
+
 function bookAppointment() {
   rl.question("Enter Patient ID: ", (patientId) => {
     rl.question("Enter Doctor ID: ", (doctorId) => {
@@ -171,6 +227,27 @@ function bookAppointment() {
         showMenu();
         return;
       }
+      if (doctor.availableSlots.length === 0) {
+  console.log("No slots available for this doctor.");
+
+  rl.question("Do you want to join the waitlist? (yes/no): ", (answer) => {
+
+    if (answer.toLowerCase() === "yes") {
+      waitlist.push({
+        patientId: patientId,
+        doctorId: doctorId
+      });
+
+      console.log("You have been added to the waitlist.");
+    } else {
+      console.log("You were not added to the waitlist.");
+    }
+
+    showMenu();
+  });
+
+  return;
+}
 
       console.log(`Available slots for ${doctor.name}:`);
 
@@ -252,7 +329,9 @@ console.log("10. Exit");
   viewAppointments();
 
 } else if (choice === "7") {
-  cancelAppointment();
+  cancelAppointment()
+}else if (choice === "8") {
+  viewWaitlist()
 }else if (choice === "10") {
   rl.close();
 }
