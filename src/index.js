@@ -6,6 +6,16 @@ let patients = JSON.parse(fs.readFileSync("data/patients.json"));
 let appointments = JSON.parse(fs.readFileSync("data/appointments.json"));
 let waitlist = JSON.parse(fs.readFileSync("data/waitlist.json"));
 
+let nextAppointmentId = 1;
+
+if (appointments.length > 0) {
+    const ids = appointments.map(
+        (appointment) => Number(appointment.id.replace("A", ""))
+    );
+
+    nextAppointmentId = Math.max(...ids) + 1;
+}
+
 function saveData() {
     fs.writeFileSync("data/doctors.json", JSON.stringify(doctors, null, 2));
     fs.writeFileSync("data/patients.json", JSON.stringify(patients, null, 2));
@@ -15,7 +25,24 @@ function saveData() {
 
 function addDoctor() {
   rl.question("Enter Doctor ID: ", (doctorId) => {
-    rl.question("Enter Doctor Name: ", (doctorName) => {
+
+    if (doctorId.trim() === "") {
+    console.log("Doctor ID cannot be empty.");
+    showMenu();
+    return;
+  }
+
+  const existingDoctor = doctors.find(
+    (doctor) => doctor.id === doctorId
+  );
+
+  if (existingDoctor) {
+    console.log("Doctor ID already exists.");
+    showMenu();
+    return;
+  }
+
+  rl.question("Enter Doctor Name: ", (doctorName) => {
       rl.question("Enter Specialization: ", (specialization) => {
         rl.question("Enter available slot 1: ", (slot1) => {
           rl.question("Enter available slot 2: ", (slot2) => {
@@ -31,7 +58,7 @@ function addDoctor() {
               doctors.push(doctor);
               saveData();
               console.log("Doctor added successfully!");
-              // console.log(doctors);
+
 
               showMenu()
             });
@@ -43,7 +70,24 @@ function addDoctor() {
 }
 
 function addPatient() {
-  rl.question("Enter Patient ID: ", (patientId) => {
+   rl.question("Enter Patient ID: ", (patientId) => {
+
+    if (patientId.trim() === "") {
+    console.log("Patient ID cannot be empty.");
+    showMenu();
+    return;
+  }
+
+    const existingPatient = patients.find(
+      (patient) => patient.id === patientId
+    );
+
+    if (existingPatient) {
+      console.log("Patient ID already exists.");
+      showMenu();
+      return;
+    }
+
     rl.question("Enter Patient Name: ", (patientName) => {
       rl.question("Enter Patient Age: ", (patientAge) => {
 
@@ -162,11 +206,13 @@ if (waitingPatient) {
   console.log(`Assigning slot to ${patient.name}`);
 
   const newAppointment = {
-    id: `A${appointments.length + 1}`,
-    patientId: patient.id,
-    doctorId: doctor.id,
-    slot: appointment.slot
-  };
+  id: `A${String(nextAppointmentId).padStart(3, "0")}`,
+  patientId: patient.id,
+  doctorId: doctor.id,
+  slot: appointment.slot
+};
+
+nextAppointmentId++;
 
   appointments.push(newAppointment);
 
@@ -304,17 +350,19 @@ function bookAppointment() {
        const selectedSlot = doctor.availableSlots[slotIndex];
 
 const appointment = {
-  id: `A${appointments.length + 1}`,
+  id: `A${String(nextAppointmentId).padStart(3, "0")}`,
   patientId: patient.id,
   doctorId: doctor.id,
   slot: selectedSlot
 };
+
+nextAppointmentId++;
+
 doctor.availableSlots.splice(slotIndex, 1);
 
 appointments.push(appointment);
 saveData();
 console.log("Appointment booked successfully!");
-console.log(appointment);
 
 showMenu();
 

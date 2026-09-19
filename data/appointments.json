@@ -1,20 +1,20 @@
 [
   {
-    "id": "A1",
-    "patientId": "201",
-    "doctorId": "101",
+    "id": "A002",
+    "patientId": "1",
+    "doctorId": "1",
+    "slot": "10"
+  },
+  {
+    "id": "A004",
+    "patientId": "1",
+    "doctorId": "1",
     "slot": "11"
   },
   {
-    "id": "A2",
-    "patientId": "201",
-    "doctorId": "101",
+    "id": "A005",
+    "patientId": "1",
+    "doctorId": "1",
     "slot": "12"
-  },
-  {
-    "id": "A3",
-    "patientId": "201",
-    "doctorId": "101",
-    "slot": "10"
   }
 ]
